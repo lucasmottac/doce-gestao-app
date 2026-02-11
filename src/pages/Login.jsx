@@ -41,7 +41,7 @@ const Login = () => {
                     <div className="w-20 h-20 bg-gradient-to-tr from-primary to-primary-glow rounded-2xl rotate-3 flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(218,69,95,0.6)] border border-white/20">
                         <Cookie size={40} className="text-white" />
                     </div>
-                    <h1 className="text-4xl font-extrabold tracking-tight text-center mb-2 drop-shadow-lg">Doce Gestão</h1>
+                    <h1 className="text-4xl font-extrabold tracking-tight text-center mb-2 drop-shadow-lg">Cookies Lucrativo</h1>
                     <p className="text-white/60 text-sm font-light tracking-widest uppercase">Premium Edition</p>
                 </div>
 

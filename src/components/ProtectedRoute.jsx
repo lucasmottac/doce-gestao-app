@@ -1,9 +1,10 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading, hasRole } = useAuth()
-    const location = window.location.pathname
+    const location = useLocation()
+    const currentPath = location.pathname
 
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center bg-gray-50">Carregando...</div>

@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
                 .select('roles')
                 .eq('id', userId)
                 .single()
-            
+
             if (error) {
                 console.error('Error fetching roles:', error)
                 return []
@@ -33,16 +33,16 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // Check active sessions and sets the user
         const initAuth = async () => {
-             const { data: { session } } = await supabase.auth.getSession()
-             setSession(session)
-             setUser(session?.user ?? null)
-             
-             if (session?.user) {
-                 const roles = await fetchUserRoles(session.user.id)
-                 setUserRoles(roles)
-             }
-             
-             setLoading(false)
+            const { data: { session } } = await supabase.auth.getSession()
+            setSession(session)
+            setUser(session?.user ?? null)
+
+            if (session?.user) {
+                const profile = await fetchUserProfile(session.user.id)
+                setUserProfile(profile)
+            }
+
+            setLoading(false)
         }
 
         initAuth()
@@ -51,14 +51,14 @@ export const AuthProvider = ({ children }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             setSession(session)
             setUser(session?.user ?? null)
-            
+
             if (session?.user) {
-                const roles = await fetchUserRoles(session.user.id)
-                setUserRoles(roles)
+                const profile = await fetchUserProfile(session.user.id)
+                setUserProfile(profile)
             } else {
-                setUserRoles([])
+                setUserProfile(null)
             }
-            
+
             setLoading(false)
         })
 
@@ -81,7 +81,30 @@ export const AuthProvider = ({ children }) => {
     }
 
     const hasRole = (role) => {
-        return userRoles.includes(role)
+        if (!userProfile) return false;
+
+        // 1. Check Boolean Column (Priority - requested by user)
+        // If the role name matches a column (e.g., 'acookies') and it is true
+        if (userProfile[role] === true) {
+            return true;
+        }
+
+        // 2. Check Roles Array (Fallback/Compatibility)
+        if (userProfile.roles && Array.isArray(userProfile.roles)) {
+            // Standard check
+            if (userProfile.roles.includes(role)) return true;
+
+            // Fallback for string variations if legacy data exists
+            if (role === 'acookies' && (
+                userProfile.roles.includes('TRUE') ||
+                userProfile.roles.includes('true') ||
+                userProfile.roles.includes('1')
+            )) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     const value = {
@@ -91,7 +114,8 @@ export const AuthProvider = ({ children }) => {
         user,
         session,
         loading,
-        userRoles,
+        userProfile,
+        userRoles: userProfile?.roles || [],
         hasRole
     }
 

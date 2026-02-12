@@ -9,24 +9,25 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [session, setSession] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [userRoles, setUserRoles] = useState([])
+    const [userProfile, setUserProfile] = useState(null) // Renamed from userRoles to userProfile
 
-    const fetchUserRoles = async (userId) => {
+    // Renamed from fetchUserRoles to fetchUserProfile
+    const fetchUserProfile = async (userId) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('roles')
+                .select('*') // Select all columns to get boolean flags like 'acookies'
                 .eq('id', userId)
                 .single()
 
             if (error) {
-                console.error('Error fetching roles:', error)
-                return []
+                console.error('Error fetching profile:', error)
+                return null
             }
-            return data?.roles || []
+            return data
         } catch (error) {
-            console.error('Unexpected error fetching roles:', error)
-            return []
+            console.error('Unexpected error fetching profile:', error)
+            return null
         }
     }
 
@@ -115,7 +116,7 @@ export const AuthProvider = ({ children }) => {
         session,
         loading,
         userProfile,
-        userRoles: userProfile?.roles || [],
+        userRoles: userProfile?.roles || [], // Backwards compatibility if needed
         hasRole
     }
 

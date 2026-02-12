@@ -8,9 +8,17 @@ import GlassCard from '../components/GlassCard';
 import { premiumRecipesData } from '../data/premiumRecipesData';
 
 const OtherRecipes = () => {
-    const { hasRole } = useAuth(); // Import useAuth
+    const { hasRole, userProfile } = useAuth(); // Import useAuth
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+    // DEBUG: Log current access state
+    React.useEffect(() => {
+        console.log('OtherRecipes Mount - Access Check:', {
+            apascoa: hasRole('apascoa'),
+            userProfile
+        });
+    }, [hasRole, userProfile]);
 
     // Premium Categories Data
     const premiumCategories = [

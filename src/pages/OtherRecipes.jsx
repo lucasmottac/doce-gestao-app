@@ -305,11 +305,6 @@ const OtherRecipes = () => {
 
             </div>
 
-// ... imports
-            import {createPortal} from 'react-dom';
-
-            // ... inside component ...
-
             {/* Recipe Detail Modal - Rendered via Portal */}
             {selectedRecipe && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center sm:p-4 isolate">

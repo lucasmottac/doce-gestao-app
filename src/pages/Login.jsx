@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { signInWithEmail, user } = useAuth();
+    const { signInWithEmail, user, hasRole } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -15,9 +15,13 @@ const Login = () => {
     // Auto-redirect if already logged in
     useEffect(() => {
         if (user) {
-            navigate('/dashboard');
+            if (hasRole('acookies') || hasRole('avitalicio')) {
+                navigate('/dashboard');
+            } else {
+                navigate('/other-recipes');
+            }
         }
-    }, [user, navigate]);
+    }, [user, hasRole, navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -27,10 +31,9 @@ const Login = () => {
         try {
             const { error } = await signInWithEmail(email, password);
             if (error) throw error;
-            navigate('/dashboard');
+            // Navigation handled by useEffect
         } catch (error) {
             setError('Erro ao fazer login: ' + error.message);
-        } finally {
             setLoading(false);
         }
     };

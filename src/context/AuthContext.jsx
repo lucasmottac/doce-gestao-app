@@ -3,10 +3,6 @@ import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext({})
 
-// ... imports
-
-// ... context creation
-
 export const useAuth = () => {
     const context = useContext(AuthContext)
     if (context === undefined) {
@@ -19,14 +15,13 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [session, setSession] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [userProfile, setUserProfile] = useState(null) // Renamed from userRoles to userProfile
+    const [userProfile, setUserProfile] = useState(null)
 
-    // Renamed from fetchUserRoles to fetchUserProfile
     const fetchUserProfile = async (userId) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('*') // Select all columns to get boolean flags like 'acookies'
+                .select('*')
                 .eq('id', userId)
                 .single()
 
@@ -42,38 +37,57 @@ export const AuthProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        // Check active sessions and sets the user
         const initAuth = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            setSession(session)
-            setUser(session?.user ?? null)
+            try {
+                // Safely get session
+                const { data, error } = await supabase.auth.getSession()
 
-            if (session?.user) {
-                const profile = await fetchUserProfile(session.user.id)
-                setUserProfile(profile)
+                if (error) {
+                    console.error('Supabase session error:', error)
+                    return
+                }
+
+                const session = data?.session ?? null
+                setSession(session)
+                setUser(session?.user ?? null)
+
+                if (session?.user) {
+                    const profile = await fetchUserProfile(session.user.id)
+                    setUserProfile(profile)
+                }
+            } catch (err) {
+                console.error('Unexpected error initializing auth:', err)
+            } finally {
+                setLoading(false)
             }
-
-            setLoading(false)
         }
 
         initAuth()
 
-        // Listen for changes on auth state (logged in, signed out, etc.)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setSession(session)
-            setUser(session?.user ?? null)
+        // Safely subscribe to auth changes
+        const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            try {
+                setSession(session)
+                setUser(session?.user ?? null)
 
-            if (session?.user) {
-                const profile = await fetchUserProfile(session.user.id)
-                setUserProfile(profile)
-            } else {
-                setUserProfile(null)
+                if (session?.user) {
+                    const profile = await fetchUserProfile(session.user.id)
+                    setUserProfile(profile)
+                } else {
+                    setUserProfile(null)
+                }
+            } catch (err) {
+                console.error('Error in auth state change:', err)
+            } finally {
+                setLoading(false)
             }
-
-            setLoading(false)
         })
 
-        return () => subscription.unsubscribe()
+        return () => {
+            if (data?.subscription) {
+                data.subscription.unsubscribe()
+            }
+        }
     }, [])
 
     const signInWithEmail = async (email, password) => {
@@ -94,18 +108,13 @@ export const AuthProvider = ({ children }) => {
     const hasRole = (role) => {
         if (!userProfile) return false;
 
-        // 1. Check Boolean Column (Priority - requested by user)
-        // If the role name matches a column (e.g., 'acookies') and it is true
         if (userProfile[role] === true) {
             return true;
         }
 
-        // 2. Check Roles Array (Fallback/Compatibility)
         if (userProfile.roles && Array.isArray(userProfile.roles)) {
-            // Standard check
             if (userProfile.roles.includes(role)) return true;
 
-            // Fallback for string variations if legacy data exists
             if (role === 'acookies' && (
                 userProfile.roles.includes('TRUE') ||
                 userProfile.roles.includes('true') ||
@@ -126,7 +135,7 @@ export const AuthProvider = ({ children }) => {
         session,
         loading,
         userProfile,
-        userRoles: userProfile?.roles || [], // Backwards compatibility if needed
+        userRoles: userProfile?.roles || [],
         hasRole
     }
 

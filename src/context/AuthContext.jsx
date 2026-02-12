@@ -172,34 +172,9 @@ export const AuthProvider = ({ children }) => {
     }
 
     const hasRole = (role) => {
-        if (!userProfile) return false;
-
-        // MASTER KEY LOGIC: If 'avitalicio' is true, grant access to EVERYTHING
-        if (userProfile.avitalicio === true ||
-            (userProfile.roles && userProfile.roles.includes('avitalicio'))) {
-            return true;
-        }
-
-        // Direct Boolean Column Check (e.g., userProfile.amassa === true)
-        if (userProfile[role] === true) {
-            return true;
-        }
-
-        // Array-based Role Check (legacy/hybrid support)
-        if (userProfile.roles && Array.isArray(userProfile.roles)) {
-            if (userProfile.roles.includes(role)) return true;
-
-            // Check for string boolean representations in array
-            if (role === 'acookies' && (
-                userProfile.roles.includes('TRUE') ||
-                userProfile.roles.includes('true') ||
-                userProfile.roles.includes('1')
-            )) {
-                return true;
-            }
-        }
-
-        return false;
+        // GLOBAL ACCESS: If user has a profile, they have access to EVERYTHING.
+        // We removed specific column checks as requested.
+        return !!userProfile;
     }
 
     const value = {

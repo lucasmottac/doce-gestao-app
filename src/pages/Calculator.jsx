@@ -41,6 +41,17 @@ const Calculator = () => {
         const suggestedPrice = totalUnitCost * (1 + margin / 100);
         const profit = suggestedPrice - totalUnitCost;
 
+        return {
+            unitDoughCost,
+            unitPackCost,
+            unitGasCost,
+            unitDeliveryCost,
+            unitOtherCost,
+            totalUnitCost,
+            suggestedPrice,
+            profit,
+            margin
+        };
     };
 
     const { unitDoughCost, unitPackCost, unitGasCost, unitDeliveryCost, unitOtherCost, totalUnitCost, suggestedPrice, profit, margin } = getValues();

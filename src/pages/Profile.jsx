@@ -36,6 +36,8 @@ const Profile = () => {
         console.log('Info Saved:', userInfo);
     };
 
+    const [loading, setLoading] = useState(false);
+
     const handleSavePassword = async () => {
         if (passwords.new !== passwords.confirm) {
             alert('As senhas não coincidem!');
@@ -47,6 +49,7 @@ const Profile = () => {
             return;
         }
 
+        setLoading(true);
         try {
             const { error } = await updatePassword(passwords.new);
             if (error) throw error;
@@ -56,6 +59,8 @@ const Profile = () => {
             setPasswords({ new: '', confirm: '' });
         } catch (error) {
             alert('Erro ao alterar senha: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -205,15 +210,24 @@ const Profile = () => {
                                         setIsChangingPassword(false);
                                         setPasswords({ new: '', confirm: '' });
                                     }}
-                                    className="flex-1 py-3 rounded-xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm"
+                                    disabled={loading}
+                                    className="flex-1 py-3 rounded-xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm disabled:opacity-50"
                                 >
                                     CANCELAR
                                 </button>
                                 <button
                                     onClick={handleSavePassword}
-                                    className="flex-1 py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all text-sm"
+                                    disabled={loading}
+                                    className="flex-1 py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
-                                    SALVAR SENHA
+                                    {loading ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            SALVANDO...
+                                        </>
+                                    ) : (
+                                        'SALVAR SENHA'
+                                    )}
                                 </button>
                             </div>
                         </div>

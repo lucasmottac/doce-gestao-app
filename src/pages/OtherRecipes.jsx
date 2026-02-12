@@ -35,7 +35,7 @@ const OtherRecipes = () => {
             gradient: 'from-pink-500 to-rose-500',
             icon: '🧁',
             recipes: premiumRecipesData[1],
-            checkoutLink: 'https://comprasegura.sbs/checkout/cmlimy7820alb21qrdp0rqux4?offer=SJL86D8'
+            checkoutLink: 'https://ggcheckout.com.br/checkout/v5/mM0t4BlhdCSCkJDBoW0j'
         },
         {
             id: 'pascoa',
@@ -46,7 +46,7 @@ const OtherRecipes = () => {
             gradient: 'from-amber-700 to-orange-900',
             icon: '🐰',
             recipes: premiumRecipesData[2],
-            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin0au70ao121qrwowbceb5?offer=B0WS7P2'
+            checkoutLink: 'https://ggcheckout.com.br/checkout/v5/QegxwpbL6EJJ1rVdWVYt'
         },
         {
             id: 'massa',
@@ -57,7 +57,7 @@ const OtherRecipes = () => {
             gradient: 'from-yellow-400 to-amber-500',
             icon: '🎂',
             recipes: premiumRecipesData[3],
-            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin0ma30b5s28qrsbgk4d7p?offer=ZYLGZV9'
+            checkoutLink: 'https://ggcheckout.com.br/checkout/v5/6SXgVsqh8MOaWEWmYD1Z'
         },
         {
             id: 'geladinho',
@@ -68,7 +68,7 @@ const OtherRecipes = () => {
             gradient: 'from-blue-400 to-cyan-500',
             icon: '❄️',
             recipes: premiumRecipesData[4],
-            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin0xm00aoo21qr3k4qequw?offer=YA7BUAP'
+            checkoutLink: 'https://ggcheckout.com.br/checkout/v5/KCakDkIQWLzADmbC940i'
         },
         {
             id: 'palha',
@@ -79,7 +79,7 @@ const OtherRecipes = () => {
             gradient: 'from-red-500 to-pink-600',
             icon: '🍫',
             recipes: premiumRecipesData[5],
-            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin1abv0b6p28qret7mu69h?offer=D5E9FJJ'
+            checkoutLink: 'https://ggcheckout.com.br/checkout/v5/rmmuVRGl3MI6mgmjHBDz'
         },
         {
             id: 'iogurte',
@@ -90,7 +90,7 @@ const OtherRecipes = () => {
             gradient: 'from-purple-400 to-indigo-500',
             icon: '🥛',
             recipes: premiumRecipesData[6],
-            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin1mjg0b7328qr1ymj8zn5?offer=TEO036H'
+            checkoutLink: 'https://ggcheckout.com.br/checkout/v5/yWdMqsgygYpirmx40Lbt'
         },
     ];
 

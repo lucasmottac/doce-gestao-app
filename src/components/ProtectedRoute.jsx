@@ -19,28 +19,22 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" replace />
     }
 
-    // Check for main app access (Dashboard, Recipes, etc.)
-    const hasAccess = hasRole('acookies') || hasRole('avitalicio');
-
-    console.log('ProtectedRoute Check:', {
-        path: currentPath,
-        hasAccess,
-        profile: user ? 'Loaded' : 'No User',
-        roles: hasRole('acookies') ? 'acookies' : 'none'
-    });
-
-    // Allowed routes for EVERYONE logged in (Profile, Other Recipes)
-    const alwaysAllowed = ['/profile', '/other-recipes'];
-    const isAllowedRoute = alwaysAllowed.some(route => currentPath.includes(route));
-
-    // If user has 'acookies', they can access EVERYTHING.
-    // If not, they can ONLY access 'alwaysAllowed' routes.
-    if (!hasAccess && !isAllowedRoute) {
-        console.warn(`Access Denied to ${currentPath}. Redirecting to /other-recipes`);
-        return <Navigate to="/other-recipes" replace />
+    // SIMPLIFIED ACCESS LOGIC (Emergency Fix)
+    // 1. Profile and Other Recipes are ALWAYS allowed for logged-in users.
+    if (currentPath.includes('/profile') || currentPath.includes('/other-recipes')) {
+        return children;
     }
 
-    return children
+    // 2. Dashboard, Recipes, and Calculator REQUIRE 'acookies' (or master key)
+    const hasMainAccess = hasRole('acookies') || hasRole('avitalicio');
+
+    if (hasMainAccess) {
+        return children;
+    }
+
+    // 3. If no access to main pages, redirect to Other Recipes (the "Home" for restricted users)
+    console.warn(`Redirecting from ${currentPath} to /other-recipes (No 'acookies' permission)`);
+    return <Navigate to="/other-recipes" replace />
 }
 
 export default ProtectedRoute

@@ -24,9 +24,9 @@ export const AuthProvider = ({ children }) => {
                 setTimeout(() => reject(new Error('Request timed out')), 5000)
             );
 
-            // Fetch profile
+            // Fetch profile from 'usuarios' table as requested
             const fetchPromise = supabase
-                .from('profiles')
+                .from('usuarios')
                 .select('*')
                 .eq('id', userId)
                 .single();
@@ -97,9 +97,9 @@ export const AuthProvider = ({ children }) => {
 
         // REAL-TIME SUBSCRIPTION FOR PROFILE UPDATES
         const channel = supabase
-            .channel('public:profiles')
+            .channel('public:usuarios')
             .on('postgres_changes',
-                { event: 'UPDATE', schema: 'public', table: 'profiles' },
+                { event: 'UPDATE', schema: 'public', table: 'usuarios' },
                 (payload) => {
                     if (session?.user && payload.new.id === session.user.id) {
                         console.log('Real-time profile update received:', payload.new);

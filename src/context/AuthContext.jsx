@@ -182,7 +182,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         userProfile,
         userRoles: userProfile?.roles || [],
-        hasRole
+        hasRole,
+        refetchUserProfile: () => user?.id && fetchUserProfile(user.id).then(setUserProfile)
     }
 
     // Debug log

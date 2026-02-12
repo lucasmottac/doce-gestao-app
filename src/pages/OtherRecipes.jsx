@@ -141,25 +141,7 @@ const OtherRecipes = () => {
                 {!selectedCategory ? (
                     <>
                         {/* Hero Banner Sale */}
-                        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-r from-yellow-600 to-amber-600 shadow-2xl border border-yellow-400/30">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Crown size={120} className="text-white" />
-                            </div>
-                            <div className="relative z-10">
-                                <span className="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white mb-2 border border-white/20">
-                                    MEMBRO ELITE
-                                </span>
-                                <h2 className="text-xl font-bold text-white mb-1">
-                                    Desbloqueie todo o potencial
-                                </h2>
-                                <p className="text-white/80 text-sm mb-4 max-w-[80%]">
-                                    Acesse +50 receitas premium testadas e aprovadas para faturar muito mais.
-                                </p>
-                                <button className="bg-white text-amber-700 font-bold py-2 px-4 rounded-xl text-sm shadow-lg active:scale-95 transition-transform flex items-center gap-2">
-                                    <Award size={16} /> Ver Planos Disponíveis
-                                </button>
-                            </div>
-                        </div>
+
 
                         {/* Premium Grid */}
                         <div className="space-y-4">

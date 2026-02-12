@@ -20,8 +20,8 @@ const ProtectedRoute = ({ children }) => {
     }
 
     // SIMPLIFIED ACCESS LOGIC (Emergency Fix)
-    // 1. Profile and Other Recipes are ALWAYS allowed for logged-in users.
-    if (currentPath.includes('/profile') || currentPath.includes('/other-recipes')) {
+    // 1. Profile, Other Recipes, and Dashboard are ALWAYS allowed for logged-in users.
+    if (currentPath.includes('/profile') || currentPath.includes('/other-recipes') || currentPath.includes('/dashboard')) {
         return children;
     }
 

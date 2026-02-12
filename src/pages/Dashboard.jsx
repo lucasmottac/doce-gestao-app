@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import GlassCard from '../components/GlassCard';
+import CookieProgressBar from '../components/CookieProgressBar';
 import { Sparkles, Copy, Lightbulb, TrendingUp, Calculator, ChefHat, DollarSign, MapPin, ArrowRight, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+
+import { recipesData } from '../data/recipes';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -14,6 +17,17 @@ const Dashboard = () => {
     const [simGoal, setSimGoal] = useState(3000);
     const [simPrice, setSimPrice] = useState(12);
     const cookiesNeeded = Math.ceil(simGoal / simPrice);
+
+    // Recipe of the Day Logic
+    const recipeOfTheDay = React.useMemo(() => {
+        const today = new Date().toDateString();
+        let hash = 0;
+        for (let i = 0; i < today.length; i++) {
+            hash = today.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash) % recipesData.length;
+        return recipesData[index];
+    }, []);
 
     // Load initial goal
     useEffect(() => {
@@ -57,6 +71,56 @@ const Dashboard = () => {
                 </div>
                 <p className="text-white/60 font-light">Vamos bater a meta de hoje?</p>
             </header>
+
+
+            {/* PROGRESS BAR WIDGET */}
+            <CookieProgressBar />
+
+            {/* RECIPE OF THE DAY WIDGET */}
+            <section className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="text-yellow-400" size={20} />
+                    <h2 className="text-lg font-bold text-white tracking-tight">Sugestão do Dia</h2>
+                </div>
+
+                <div
+                    onClick={() => navigate('/recipes', { state: { openRecipeId: recipeOfTheDay.id } })}
+                    className="relative w-full aspect-[16/7] rounded-3xl overflow-hidden cursor-pointer group shadow-lg shadow-orange-900/20 border border-white/10"
+                >
+                    <div className="absolute inset-0 bg-black">
+                        <img
+                            src={recipeOfTheDay.image}
+                            alt={recipeOfTheDay.title}
+                            className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                        />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+
+                    <div className="absolute inset-0 p-5 flex flex-col justify-center">
+                        <span className="inline-block px-2 py-1 rounded-lg bg-orange-500/20 border border-orange-500/20 text-orange-400 text-[10px] font-bold uppercase tracking-wider mb-2 w-fit">
+                            Faça Hoje
+                        </span>
+                        <h3 className="text-2xl font-black text-white leading-tight mb-1 max-w-[70%]">
+                            {recipeOfTheDay.title.replace('Cookie ', '')}
+                        </h3>
+                        <p className="text-white/70 text-xs font-medium max-w-[60%] line-clamp-2 mb-3">
+                            Uma ótima opção para aumentar suas vendas hoje!
+                        </p>
+                        <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-white/90 bg-white/10 px-2 py-1 rounded-full">
+                                <ChefHat size={10} /> {recipeOfTheDay.time}
+                            </span>
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">
+                                <DollarSign size={10} /> R$ {recipeOfTheDay.cost}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md w-10 h-10 rounded-full flex items-center justify-center border border-white/20 group-hover:bg-primary group-hover:border-primary transition-all">
+                        <ArrowRight size={20} className="text-white" />
+                    </div>
+                </div>
+            </section>
 
             {/* HERO REDESIGNED: Catálogo de Receitas */}
             <section className="mb-10">

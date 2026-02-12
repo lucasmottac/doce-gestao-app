@@ -17,11 +17,7 @@ const Login = () => {
         if (authLoading) return; // Wait for profile fetch to complete
 
         if (user) {
-            if (hasRole('acookies') || hasRole('avitalicio')) {
-                navigate('/dashboard');
-            } else {
-                navigate('/other-recipes');
-            }
+            navigate('/dashboard');
         }
     }, [user, hasRole, navigate, authLoading]);
 

@@ -1,16 +1,32 @@
 import React, { useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import GlassCard from '../components/GlassCard';
-import { Clock, Users, X, ChevronRight, Calculator, Star, Leaf, ChefHat, PlayCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Clock, Users, X, ChevronRight, Calculator, Star, Leaf, ChefHat, PlayCircle, CheckCircle } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { recipesData } from '../data/recipes';
 import RecipeActiveMode from '../components/RecipeActiveMode';
+import { useRecipeProgress } from '../context/RecipeProgressContext';
 
 const Recipes = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { completedRecipes, toggleRecipeCompletion } = useRecipeProgress();
     const [selectedRecipe, setSelectedRecipe] = useState(null);
     const [activeTab, setActiveTab] = useState('traditional');
     const [isCooking, setIsCooking] = useState(false);
+
+    // Auto-open recipe from navigation state
+    React.useEffect(() => {
+        if (location.state?.openRecipeId) {
+            const recipeToOpen = recipesData.find(r => r.id === location.state.openRecipeId);
+            if (recipeToOpen) {
+                setSelectedRecipe(recipeToOpen);
+                setActiveTab(recipeToOpen.category);
+                // Clear state to prevent reopening on refresh (optional but good UX)
+                window.history.replaceState({}, document.title)
+            }
+        }
+    }, [location]);
 
     const filteredRecipes = useMemo(() => {
         return recipesData.filter(r => r.category === activeTab);
@@ -85,6 +101,11 @@ const Recipes = () => {
                                     <span className="text-[10px] font-bold bg-emerald-500/20 backdrop-blur-md px-2 py-1 rounded-lg text-emerald-400 border border-emerald-500/20">
                                         R$ {recipe.cost}
                                     </span>
+                                    {completedRecipes.includes(recipe.title) && (
+                                        <span className="ml-auto bg-green-500 text-black p-1 rounded-full shadow-lg shadow-green-500/50">
+                                            <CheckCircle size={12} />
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -160,36 +181,57 @@ const Recipes = () => {
                                     </div>
                                 </div>
                             </div>
-
-                            <button
-                                onClick={() => setIsCooking(true)}
-                                className="w-full mt-6 mb-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-900/20 active:scale-[0.98] animate-bounce-in"
-                            >
-                                <PlayCircle size={20} />
-                                Iniciar Modo Cozinha
-                            </button>
-
-                            <button
-                                onClick={() => navigate('/calculator')}
-                                className="w-full bg-white/5 hover:bg-white/10 text-white/70 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
-                            >
-                                <Calculator size={18} />
-                                Calcular Lucro
-                                <ChevronRight size={16} />
-                            </button>
                         </div>
+
+                        <button
+                            onClick={() => toggleRecipeCompletion(selectedRecipe.title)}
+                            className={`w-full mb-3 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.98] ${completedRecipes.includes(selectedRecipe.title)
+                                ? 'bg-green-500 hover:bg-green-600 text-white shadow-green-900/20'
+                                : 'bg-white/10 hover:bg-white/20 text-white'
+                                }`}
+                        >
+                            {completedRecipes.includes(selectedRecipe.title) ? (
+                                <>
+                                    <CheckCircle size={20} />
+                                    Receita Concluída!
+                                </>
+                            ) : (
+                                <>
+                                    <div className="w-5 h-5 rounded-full border-2 border-white/40"></div>
+                                    Marcar como Feita
+                                </>
+                            )}
+                        </button>
+
+                        <button
+                            onClick={() => setIsCooking(true)}
+                            className="w-full mt-6 mb-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-900/20 active:scale-[0.98] animate-bounce-in"
+                        >
+                            <PlayCircle size={20} />
+                            Iniciar Modo Cozinha
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/calculator')}
+                            className="w-full bg-white/5 hover:bg-white/10 text-white/70 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                        >
+                            <Calculator size={18} />
+                            Calcular Lucro
+                            <ChevronRight size={16} />
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Active Cooking Mode Overlay */}
-            {isCooking && selectedRecipe && (
-                <RecipeActiveMode
-                    recipe={selectedRecipe}
-                    onClose={() => setIsCooking(false)}
-                />
-            )}
-        </Layout>
+            {
+                isCooking && selectedRecipe && (
+                    <RecipeActiveMode
+                        recipe={selectedRecipe}
+                        onClose={() => setIsCooking(false)}
+                    />
+                )
+            }
+        </Layout >
     );
 };
 

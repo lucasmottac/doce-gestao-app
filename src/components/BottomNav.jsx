@@ -1,5 +1,4 @@
-import React from 'react';
-import { Home, ChefHat, Calculator, BookOpen, User } from 'lucide-react';
+import { Home, ChefHat, Calculator, BookOpen, User, Trophy, DollarSign } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const BottomNav = () => {
@@ -10,12 +9,14 @@ const BottomNav = () => {
         { icon: Home, label: 'Home', path: '/dashboard' },
         { icon: ChefHat, label: 'Receitas', path: '/recipes' },
         { icon: BookOpen, label: 'Outras', path: '/other-recipes' },
+        { icon: DollarSign, label: 'Vendas', path: '/financials' },
         { icon: Calculator, label: 'Calc', path: '/calculator' },
+        { icon: Trophy, label: 'Conquistas', path: '/achievements' },
         { icon: User, label: 'Perfil', path: '/profile' },
     ];
 
     return (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[360px] bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full py-3 px-6 shadow-2xl shadow-black/50 z-50 flex justify-between items-center ring-1 ring-white/5">
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[420px] bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full py-3 px-6 shadow-2xl shadow-black/50 z-50 flex justify-between items-center ring-1 ring-white/5">
             {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (

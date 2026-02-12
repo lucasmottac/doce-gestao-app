@@ -142,7 +142,8 @@ export const AuthProvider = ({ children }) => {
         }
 
         // Direct Boolean Column Check (e.g., userProfile.amassa === true)
-        if (userProfile[role] === true) {
+        const val = userProfile[role];
+        if (val === true || val === 'true' || val === 'TRUE' || val === 1 || val === '1') {
             return true;
         }
 

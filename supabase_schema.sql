@@ -46,8 +46,8 @@ create policy "Users can delete their own calculations" on saved_calculations
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id)
-  values (new.id);
+  insert into public.profiles (id, roles)
+  values (new.id, ARRAY['acookies']);
   return new;
 end;
 $$ language plpgsql security definer;

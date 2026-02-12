@@ -19,11 +19,19 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUserProfile = async (userId) => {
         try {
-            const { data, error } = await supabase
+            // Timeout promise to prevent infinite hanging
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Request timed out')), 5000)
+            );
+
+            const fetchPromise = supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
-                .single()
+                .single();
+
+            // Race against timeout
+            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
 
             if (error) {
                 console.error('Error fetching profile:', error)
@@ -31,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             }
             return data
         } catch (error) {
-            console.error('Unexpected error fetching profile:', error)
+            console.error('Unexpected error fetching profile (possible RLS or Network issue):', error)
             return null
         }
     }
@@ -139,8 +147,6 @@ export const AuthProvider = ({ children }) => {
         hasRole
     }
 
-    // ... (rest of component)
-
     // Debug log
     console.log('AuthProvider State:', { loading, session, userProfile });
 
@@ -148,7 +154,10 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={value}>
             {loading ? (
                 <div className="min-h-screen bg-black flex items-center justify-center text-white">
-                    Loading Auth...
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <p>Loading Auth...</p>
+                    </div>
                 </div>
             ) : (
                 children

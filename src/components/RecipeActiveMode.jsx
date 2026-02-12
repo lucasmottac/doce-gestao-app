@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, Circle, Play, Pause, RotateCcw, Timer, ChefHat, ArrowRight } from 'lucide-react';
 
-const RecipeActiveMode = ({ recipe, onClose }) => {
+const RecipeActiveMode = ({ recipe, onClose, onComplete }) => {
     const [activeTab, setActiveTab] = useState('ingredients'); // 'ingredients' or 'prep'
     const [checkedIngredients, setCheckedIngredients] = useState({});
     const [completedSteps, setCompletedSteps] = useState({});
@@ -173,6 +173,14 @@ const RecipeActiveMode = ({ recipe, onClose }) => {
                                     </div>
                                 );
                             })}
+                            {/* Mark as Done Button */}
+                            <button
+                                onClick={onComplete}
+                                className="w-full mt-6 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl animate-bounce-in flex items-center justify-center gap-2 shadow-lg shadow-green-900/20 active:scale-[0.98] transition-all"
+                            >
+                                <CheckCircle size={20} />
+                                Concluir Receita
+                            </button>
                         </div>
                     )}
                 </div>

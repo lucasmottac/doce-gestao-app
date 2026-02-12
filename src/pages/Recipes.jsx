@@ -228,6 +228,10 @@ const Recipes = () => {
                     <RecipeActiveMode
                         recipe={selectedRecipe}
                         onClose={() => setIsCooking(false)}
+                        onComplete={() => {
+                            toggleRecipeCompletion(selectedRecipe.title);
+                            setIsCooking(false);
+                        }}
                     />
                 )
             }

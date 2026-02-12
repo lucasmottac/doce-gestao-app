@@ -138,80 +138,87 @@ const Profile = () => {
 
                 {/* Security Card */}
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
-                    <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                            <Shield size={18} className="text-primary" /> Segurança
-                        </h2>
-                        {!isChangingPassword ? (
-                            <button
-                                onClick={() => setIsChangingPassword(true)}
-                                className="text-xs font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-all"
-                            >
-                                ALTERAR SENHA
-                            </button>
-                        ) : (
-                            <div className="flex gap-2">
+                    <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+                        <Shield size={18} className="text-primary" /> Segurança
+                    </h2>
+
+                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-green-500/20 p-2.5 rounded-full">
+                                <Lock size={20} className="text-green-400" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-white font-medium">Senha</p>
+                                <p className="text-xs text-white/40">Proteja sua conta</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setIsChangingPassword(true)}
+                            className="text-xs font-bold text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-all"
+                        >
+                            ALTERAR
+                        </button>
+                    </div>
+                </div>
+
+                {/* Password Change Modal - Portal or Inline Overlay */}
+                {isChangingPassword && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                        <div className="w-full max-w-md bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 shadow-2xl relative animate-scale-in">
+                            <h3 className="text-xl font-bold text-white mb-1">Alterar Senha</h3>
+                            <p className="text-sm text-white/50 mb-6">Digite sua nova senha abaixo.</p>
+
+                            <div className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-white/60 uppercase tracking-wider">Nova Senha</label>
+                                    <div className="relative">
+                                        <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                                        <input
+                                            type="password"
+                                            name="new"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder-white/20"
+                                            placeholder="Mínimo 6 caracteres"
+                                            value={passwords.new}
+                                            onChange={handlePasswordChange}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-white/60 uppercase tracking-wider">Confirmar Senha</label>
+                                    <div className="relative">
+                                        <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                                        <input
+                                            type="password"
+                                            name="confirm"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder-white/20"
+                                            placeholder="Repita a nova senha"
+                                            value={passwords.confirm}
+                                            onChange={handlePasswordChange}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 mt-8">
                                 <button
-                                    onClick={() => setIsChangingPassword(false)}
-                                    className="text-xs font-bold text-white/60 hover:text-white px-3 py-1.5"
+                                    onClick={() => {
+                                        setIsChangingPassword(false);
+                                        setPasswords({ new: '', confirm: '' });
+                                    }}
+                                    className="flex-1 py-3 rounded-xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm"
                                 >
                                     CANCELAR
                                 </button>
                                 <button
                                     onClick={handleSavePassword}
-                                    className="text-xs font-bold text-white bg-green-500/20 hover:bg-green-500 px-3 py-1.5 rounded-lg transition-all text-green-400 hover:text-white"
+                                    className="flex-1 py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all text-sm"
                                 >
-                                    CONFIRMAR
+                                    SALVAR SENHA
                                 </button>
                             </div>
-                        )}
+                        </div>
                     </div>
-
-                    {isChangingPassword && (
-                        <div className="space-y-3 animate-slide-down">
-                            {/* Removed Current Password field as per Supabase auth flow */}
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-white/40 uppercase tracking-wider">Nova Senha</label>
-                                <div className="relative">
-                                    <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                                    <input
-                                        type="password"
-                                        name="new"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder-white/10"
-                                        placeholder="Digite a nova senha"
-                                        value={passwords.new}
-                                        onChange={handlePasswordChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-white/40 uppercase tracking-wider">Confirmar Nova Senha</label>
-                                <div className="relative">
-                                    <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                                    <input
-                                        type="password"
-                                        name="confirm"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder-white/10"
-                                        placeholder="Repita a nova senha"
-                                        value={passwords.confirm}
-                                        onChange={handlePasswordChange}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {!isChangingPassword && (
-                        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
-                            <div className="bg-green-500/20 p-2 rounded-full">
-                                <Shield size={16} className="text-green-400" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-white font-medium">Senha protegida</p>
-                                <p className="text-xs text-white/40">Última alteração há 3 meses</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                )}
 
                 {/* Logout Button */}
                 <button

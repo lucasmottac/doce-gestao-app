@@ -111,6 +111,17 @@ const OtherRecipes = () => {
     // Check if category is unlocked using hasRole from context
     const isUnlocked = selectedCategory && hasRole(selectedCategory.role);
 
+    console.log('OtherRecipes Render:', {
+        hasAuth: !!useAuth,
+        hasRoleFn: !!hasRole,
+        premiumDataKeys: Object.keys(premiumRecipesData),
+        selectedCategory
+    });
+
+    if (!premiumRecipesData) {
+        return <div className="p-10 text-white">Error: Premium Data Missing</div>
+    }
+
     return (
         <Layout onBack={selectedCategory ? handleBack : undefined}>
             <div className="flex flex-col space-y-6 animate-fade-in pb-20">

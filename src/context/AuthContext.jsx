@@ -139,9 +139,20 @@ export const AuthProvider = ({ children }) => {
         hasRole
     }
 
+    // ... (rest of component)
+
+    // Debug log
+    console.log('AuthProvider State:', { loading, session, userProfile });
+
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {loading ? (
+                <div className="min-h-screen bg-black flex items-center justify-center text-white">
+                    Loading Auth...
+                </div>
+            ) : (
+                children
+            )}
         </AuthContext.Provider>
     )
 }

@@ -103,7 +103,8 @@ export const AuthProvider = ({ children }) => {
             .on('postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'usuarios' },
                 (payload) => {
-                    if (session?.user && payload.new.id === session.user.id) {
+                    // FIX: Compare UUIDs (user_id), not BigInt (id)
+                    if (session?.user && payload.new.user_id === session.user.id) {
                         console.log('Real-time profile update received:', payload.new);
                         setUserProfile(payload.new);
                     }

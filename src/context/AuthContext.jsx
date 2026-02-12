@@ -24,20 +24,35 @@ export const AuthProvider = ({ children }) => {
                 setTimeout(() => reject(new Error('Request timed out')), 5000)
             );
 
-            const fetchPromise = supabase
+            // Try standard 'id' column first
+            const fetchPromiseId = supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
                 .single();
 
-            // Race against timeout
-            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+            try {
+                const { data, error } = await Promise.race([fetchPromiseId, timeoutPromise]);
+                if (!error && data) return data;
+            } catch (e) {
+                console.log("Primary fetch failed, trying fallback...");
+            }
 
-            if (error) {
-                console.error('Error fetching profile:', error)
+            // Fallback: Try 'user_id' column if 'id' failed or returned nothing
+            console.log("Attempting fetch with user_id column...");
+            const fetchPromiseUserId = supabase
+                .from('profiles')
+                .select('*')
+                .eq('user_id', userId) // User reported this column name
+                .single();
+
+            const { data: data2, error: error2 } = await Promise.race([fetchPromiseUserId, timeoutPromise]);
+
+            if (error2) {
+                console.error('Error fetching profile (both id and user_id failed):', error2)
                 return null
             }
-            return data
+            return data2
         } catch (error) {
             console.error('Unexpected error fetching profile (possible RLS or Network issue):', error)
             return null

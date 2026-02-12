@@ -9,19 +9,56 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [session, setSession] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [userRoles, setUserRoles] = useState([])
+
+    const fetchUserRoles = async (userId) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('roles')
+                .eq('id', userId)
+                .single()
+            
+            if (error) {
+                console.error('Error fetching roles:', error)
+                return []
+            }
+            return data?.roles || []
+        } catch (error) {
+            console.error('Unexpected error fetching roles:', error)
+            return []
+        }
+    }
 
     useEffect(() => {
         // Check active sessions and sets the user
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session)
-            setUser(session?.user ?? null)
-            setLoading(false)
-        })
+        const initAuth = async () => {
+             const { data: { session } } = await supabase.auth.getSession()
+             setSession(session)
+             setUser(session?.user ?? null)
+             
+             if (session?.user) {
+                 const roles = await fetchUserRoles(session.user.id)
+                 setUserRoles(roles)
+             }
+             
+             setLoading(false)
+        }
+
+        initAuth()
 
         // Listen for changes on auth state (logged in, signed out, etc.)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             setSession(session)
             setUser(session?.user ?? null)
+            
+            if (session?.user) {
+                const roles = await fetchUserRoles(session.user.id)
+                setUserRoles(roles)
+            } else {
+                setUserRoles([])
+            }
+            
             setLoading(false)
         })
 
@@ -43,13 +80,19 @@ export const AuthProvider = ({ children }) => {
         return await supabase.auth.updateUser({ password: newPassword })
     }
 
+    const hasRole = (role) => {
+        return userRoles.includes(role)
+    }
+
     const value = {
         signInWithEmail,
         signOut,
         updatePassword,
         user,
         session,
-        loading
+        loading,
+        userRoles,
+        hasRole
     }
 
     return (

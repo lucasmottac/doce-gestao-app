@@ -2,71 +2,87 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BookOpen, Search, ArrowRight, Lock, Star, ChevronLeft, Award, Crown, CheckCircle, Clock, Users, ChefHat, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Layout from '../components/Layout';
 import GlassCard from '../components/GlassCard';
 import { premiumRecipesData } from '../data/premiumRecipesData';
 
 const OtherRecipes = () => {
-    const navigate = useNavigate();
+    const { hasRole } = useAuth(); // Import useAuth
     const [selectedCategory, setSelectedCategory] = useState(null);
-    const [unlockedCategories, setUnlockedCategories] = useState([]);
     const [selectedRecipe, setSelectedRecipe] = useState(null);
 
     // Premium Categories Data
     const premiumCategories = [
         {
-            id: 1,
+            id: 'recheios',
+            role: 'arecheios',
             title: 'Recheios sem Fogo',
             subtitle: 'Economize Gás e Tempo',
             count: 30,
             gradient: 'from-pink-500 to-rose-500',
             icon: '🧁',
-            recipes: premiumRecipesData[1]
+            recipes: premiumRecipesData[1],
+            checkoutLink: 'https://comprasegura.sbs/checkout/cmlimy7820alb21qrdp0rqux4?offer=SJL86D8'
         },
         {
-            id: 2,
+            id: 'pascoa',
+            role: 'apascoa',
             title: 'Chocolate Páscoa',
             subtitle: 'Lucrabilidade Máxima',
             count: 30,
             gradient: 'from-amber-700 to-orange-900',
             icon: '🐰',
-            recipes: premiumRecipesData[2]
+            recipes: premiumRecipesData[2],
+            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin0au70ao121qrwowbceb5?offer=B0WS7P2'
         },
         {
-            id: 3,
+            id: 'massa',
+            role: 'amassa',
             title: 'Massa de Confeitaria',
             subtitle: 'Bases Profissionais',
             count: 30,
             gradient: 'from-yellow-400 to-amber-500',
             icon: '🎂',
-            recipes: premiumRecipesData[3]
+            recipes: premiumRecipesData[3],
+            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin0ma30b5s28qrsbgk4d7p?offer=ZYLGZV9'
         },
         {
-            id: 4,
+            id: 'geladinho',
+            role: 'ageladinho',
             title: 'Geladinho Gourmet',
             subtitle: 'Venda Todos os Dias',
             count: 30,
             gradient: 'from-blue-400 to-cyan-500',
             icon: '❄️',
-            recipes: premiumRecipesData[4]
+            recipes: premiumRecipesData[4],
+            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin0xm00aoo21qr3k4qequw?offer=YA7BUAP'
         },
         {
-            id: 5,
+            id: 'palha',
+            role: 'apalha', // corrected code from apanha to apalha based on list logic, but sticking to requested 'apanha' if strictly following instructions. Wait, user provided list: apanha -> Palha Italiana.
+            // Actually reusing list from prompt: apanha -> Libera o módulo/curso: PALHA ITALIANA.
+            // But checking the checkout link description: PALHA ITALIANA.
+            // Let me use 'apanha' as role code as per instruction.
+            role: 'apanha',
             title: 'Palha Italiana',
             subtitle: 'Doce de Sucesso',
             count: 30,
             gradient: 'from-red-500 to-pink-600',
             icon: '🍫',
-            recipes: premiumRecipesData[5]
+            recipes: premiumRecipesData[5],
+            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin1abv0b6p28qret7mu69h?offer=D5E9FJJ'
         },
         {
-            id: 6,
+            id: 'iogurte',
+            role: 'aogurte', // Instruction: aogurte -> Iogurte Caseiro
             title: 'Iogurte Caseiro',
             subtitle: 'Saudável & Rentável',
             count: 30,
             gradient: 'from-purple-400 to-indigo-500',
             icon: '🥛',
-            recipes: premiumRecipesData[6]
+            recipes: premiumRecipesData[6],
+            checkoutLink: 'https://comprasegura.sbs/checkout/cmlin1mjg0b7328qr1ymj8zn5?offer=TEO036H'
         },
     ];
 
@@ -83,9 +99,8 @@ const OtherRecipes = () => {
     };
 
     const handleUnlock = () => {
-        // Simulate purchase/unlock
-        if (selectedCategory) {
-            setUnlockedCategories([...unlockedCategories, selectedCategory.id]);
+        if (selectedCategory && selectedCategory.checkoutLink) {
+            window.open(selectedCategory.checkoutLink, '_blank');
         }
     };
 
@@ -93,7 +108,8 @@ const OtherRecipes = () => {
         setSelectedRecipe(recipe);
     };
 
-    const isUnlocked = selectedCategory && unlockedCategories.includes(selectedCategory.id);
+    // Check if category is unlocked using hasRole from context
+    const isUnlocked = selectedCategory && hasRole(selectedCategory.role);
 
     return (
         <Layout onBack={selectedCategory ? handleBack : undefined}>
@@ -168,7 +184,7 @@ const OtherRecipes = () => {
                                                 </div>
                                             </div>
                                             <div className="bg-black/20 p-2 rounded-full border border-white/10 group-hover:bg-white/20 transition-colors">
-                                                {unlockedCategories.includes(cat.id) ? (
+                                                {hasRole(cat.role) ? (
                                                     <CheckCircle size={18} className="text-white/80" />
                                                 ) : (
                                                     <Lock size={18} className="text-white/80" />

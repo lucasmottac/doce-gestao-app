@@ -18,6 +18,7 @@ import { RecipeProgressProvider } from './context/RecipeProgressContext';
 import { AchievementsProvider } from './context/AchievementsContext';
 import { FinancialsProvider } from './context/FinancialsContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
 
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -26,6 +27,7 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <HashRouter>
+          <ScrollToTop />
           <RecipeProgressProvider>
             <AchievementsProvider>
               <FinancialsProvider>

@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { signInWithEmail, user, hasRole } = useAuth();
+    const { signInWithEmail, user, hasRole, loading: authLoading } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -14,6 +14,8 @@ const Login = () => {
 
     // Auto-redirect if already logged in
     useEffect(() => {
+        if (authLoading) return; // Wait for profile fetch to complete
+
         if (user) {
             if (hasRole('acookies') || hasRole('avitalicio')) {
                 navigate('/dashboard');
@@ -21,7 +23,7 @@ const Login = () => {
                 navigate('/other-recipes');
             }
         }
-    }, [user, hasRole, navigate]);
+    }, [user, hasRole, navigate, authLoading]);
 
     const handleLogin = async (e) => {
         e.preventDefault();

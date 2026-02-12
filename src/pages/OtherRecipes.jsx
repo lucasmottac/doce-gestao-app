@@ -122,8 +122,46 @@ const OtherRecipes = () => {
         return <div className="p-10 text-white">Error: Premium Data Missing</div>
     }
 
+    const handleRepairProfile = async () => {
+        if (!user) return;
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    email: user.email,
+                    acookies: true, // Default access for testing
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) {
+                alert('Erro ao criar perfil: ' + error.message);
+                console.error(error);
+            } else {
+                alert('Perfil recriado com sucesso! O acesso deve ser liberado em instantes.');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Erro inesperado: ' + e.message);
+        }
+    };
+
     return (
         <Layout onBack={selectedCategory ? handleBack : undefined}>
+            {!isUnlocked && !selectedCategory && (
+                <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-lg mb-6 text-center">
+                    <p className="text-red-200 mb-3 text-sm">
+                        Debug: Seu usuário parece não ter um perfil vinculado ou está sem permissão.
+                    </p>
+                    <button
+                        onClick={handleRepairProfile}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg transition-all"
+                    >
+                        REPARAR MEU PERFIL (ADMIN)
+                    </button>
+                </div>
+            )}
+
             <div className="flex flex-col space-y-6 animate-fade-in pb-20">
                 {/* Header */}
                 <div className="flex items-center space-x-4">

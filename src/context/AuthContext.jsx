@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }) => {
 
         initAuth()
 
-        // Safely subscribe to auth changes
+        // Listen for changes on auth state (logged in, signed out, etc.)
         const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
             try {
                 setSession(session)
@@ -134,12 +134,27 @@ export const AuthProvider = ({ children }) => {
             }
         })
 
+        // REAL-TIME SUBSCRIPTION FOR PROFILE UPDATES
+        const channel = supabase
+            .channel('public:profiles')
+            .on('postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'profiles' },
+                (payload) => {
+                    if (session?.user && payload.new.id === session.user.id) {
+                        console.log('Real-time profile update received:', payload.new);
+                        setUserProfile(payload.new);
+                    }
+                }
+            )
+            .subscribe();
+
         return () => {
             if (data?.subscription) {
                 data.subscription.unsubscribe()
             }
+            supabase.removeChannel(channel);
         }
-    }, [])
+    }, [session?.user?.id]) // specific dependency on user id for the check
 
     const signInWithEmail = async (email, password) => {
         return await supabase.auth.signInWithPassword({
@@ -159,13 +174,22 @@ export const AuthProvider = ({ children }) => {
     const hasRole = (role) => {
         if (!userProfile) return false;
 
+        // MASTER KEY LOGIC: If 'avitalicio' is true, grant access to EVERYTHING
+        if (userProfile.avitalicio === true ||
+            (userProfile.roles && userProfile.roles.includes('avitalicio'))) {
+            return true;
+        }
+
+        // Direct Boolean Column Check (e.g., userProfile.amassa === true)
         if (userProfile[role] === true) {
             return true;
         }
 
+        // Array-based Role Check (legacy/hybrid support)
         if (userProfile.roles && Array.isArray(userProfile.roles)) {
             if (userProfile.roles.includes(role)) return true;
 
+            // Check for string boolean representations in array
             if (role === 'acookies' && (
                 userProfile.roles.includes('TRUE') ||
                 userProfile.roles.includes('true') ||

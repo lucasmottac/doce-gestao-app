@@ -31,19 +31,25 @@ export const AuthProvider = ({ children }) => {
                 .from('usuarios')
                 .select('*')
                 .eq('user_id', userId)
-                .single();
+                .maybeSingle();
 
             try {
                 const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
-                if (data) return data;
+                if (data) {
+                    console.log('Profile loaded:', data);
+                    return data;
+                }
+
                 if (error) console.warn("Profile fetch warning:", error.message);
+                if (!data && !error) console.warn("Profile fetch returned no rows for user_id:", userId);
+
             } catch (e) {
                 console.warn("Profile fetch timed out or failed");
             }
 
-            // Fallback: If no profile found, return a mock profile to ensure access 
-            // since we are in "Global Access" mode.
-            return { id: userId, email: user?.email, roles: ['acookies'] };
+            // Fallback: Return a safe default profile. 
+            // We give 'acookies' access by default so they can at least see the dashboard
+            return { id: userId, email: user?.email, roles: ['acookies'], apascoa: false };
         } catch (error) {
             console.error('Unexpected error fetching profile:', error)
             return null

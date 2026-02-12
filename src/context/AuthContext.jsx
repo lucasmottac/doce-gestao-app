@@ -24,11 +24,13 @@ export const AuthProvider = ({ children }) => {
                 setTimeout(() => reject(new Error('Request timed out')), 5000)
             );
 
-            // Fetch profile from 'usuarios' table as requested
+            // Fetch profile from 'usuarios' table as requested.
+            // MUST distinguish between 'id' (bigint) and 'user_id' (uuid).
+            // Supabase Auth ID is a UUID, so we must query against 'user_id'.
             const fetchPromise = supabase
                 .from('usuarios')
                 .select('*')
-                .eq('id', userId)
+                .eq('user_id', userId)
                 .single();
 
             try {

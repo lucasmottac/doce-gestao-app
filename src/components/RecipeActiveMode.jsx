@@ -142,33 +142,35 @@ const RecipeActiveMode = ({ recipe, onClose, onComplete }) => {
                                 return (
                                     <div
                                         key={i}
-                                        className={`relative p-6 rounded-2xl border transition-all ${completedSteps[i] ? 'bg-white/5 border-white/5 opacity-60' : 'bg-white/10 border-white/10'}`}
+                                        onClick={() => toggleStep(i)}
+                                        className={`relative p-6 rounded-2xl border transition-all cursor-pointer group flex gap-4 ${completedSteps[i]
+                                            ? 'bg-emerald-500/10 border-emerald-500/30'
+                                            : 'bg-white/5 border-white/5 hover:border-white/10'
+                                            }`}
                                     >
-                                        <div className="flex gap-4">
-                                            <div
-                                                onClick={() => toggleStep(i)}
-                                                className={`mt-1 shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all ${completedSteps[i] ? 'bg-emerald-500 border-emerald-500 text-black' : 'bg-black/40 border-primary text-primary'}`}
-                                            >
-                                                {completedSteps[i] ? <CheckCircle size={18} /> : <span className="font-bold text-sm">{i + 1}</span>}
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className={`text-lg leading-relaxed ${completedSteps[i] ? 'text-white/50' : 'text-white/90'}`}>
-                                                    {step.replace(/^\d+\.\s/, '')}
-                                                </p>
+                                        <div className={`mt-1 shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${completedSteps[i]
+                                            ? 'bg-emerald-500 border-emerald-500 text-black'
+                                            : 'border-white/20 group-hover:border-primary'
+                                            }`}>
+                                            {completedSteps[i] ? <CheckCircle size={18} /> : <span className="font-bold text-sm text-white/50 group-hover:text-white">{i + 1}</span>}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className={`text-lg leading-relaxed transition-colors ${completedSteps[i] ? 'text-emerald-400/80 line-through' : 'text-white/90'}`}>
+                                                {step.replace(/^\d+\.\s/, '')}
+                                            </p>
 
-                                                {/* Timer Button if time detected */}
-                                                {minutes > 0 && !completedSteps[i] && (
-                                                    <div className="mt-4">
-                                                        <button
-                                                            onClick={() => startTimer(minutes)}
-                                                            className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg flex items-center gap-2 text-sm text-primary font-bold transition-colors"
-                                                        >
-                                                            <Timer size={16} />
-                                                            Iniciar Timer ({minutes} min)
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
+                                            {/* Timer Button if time detected */}
+                                            {minutes > 0 && !completedSteps[i] && (
+                                                <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+                                                    <button
+                                                        onClick={() => startTimer(minutes)}
+                                                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg flex items-center gap-2 text-sm text-primary font-bold transition-colors"
+                                                    >
+                                                        <Timer size={16} />
+                                                        Iniciar Timer ({minutes} min)
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 );

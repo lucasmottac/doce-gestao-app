@@ -21,6 +21,9 @@ const OtherRecipes = () => {
         if (refetchUserProfile) refetchUserProfile();
     }, [hasRole, userProfile, refetchUserProfile]);
 
+    // Helper to check access (includes Vitalício override)
+    const canAccess = (role) => hasRole(role) || hasRole('avitalicio');
+
     // Premium Categories Data
     const premiumCategories = [
         {
@@ -69,11 +72,7 @@ const OtherRecipes = () => {
         },
         {
             id: 'palha',
-            role: 'apalha', // corrected code from apanha to apalha based on list logic, but sticking to requested 'apanha' if strictly following instructions. Wait, user provided list: apanha -> Palha Italiana.
-            // Actually reusing list from prompt: apanha -> Libera o módulo/curso: PALHA ITALIANA.
-            // But checking the checkout link description: PALHA ITALIANA.
-            // Let me use 'apanha' as role code as per instruction.
-            role: 'apanha',
+            role: 'apalha',
             title: 'Palha Italiana',
             subtitle: 'Doce de Sucesso',
             count: 30,
@@ -84,7 +83,7 @@ const OtherRecipes = () => {
         },
         {
             id: 'iogurte',
-            role: 'aogurte', // Instruction: aogurte -> Iogurte Caseiro
+            role: 'iogurte',
             title: 'Iogurte Caseiro',
             subtitle: 'Saudável & Rentável',
             count: 30,
@@ -118,7 +117,7 @@ const OtherRecipes = () => {
     };
 
     // Check if category is unlocked using hasRole from context
-    const isUnlocked = selectedCategory && hasRole(selectedCategory.role);
+    const isUnlocked = selectedCategory && canAccess(selectedCategory.role);
 
     if (!premiumRecipesData) {
         return <div className="p-10 text-white">Error: Premium Data Missing</div>
@@ -174,7 +173,7 @@ const OtherRecipes = () => {
                                     <div
                                         key={cat.id}
                                         onClick={() => handleCategoryClick(cat)}
-                                        className={`relative overflow-hidden rounded-2xl cursor-pointer group hover:scale-[1.02] transition-all duration-300 shadow-lg border border-white/5 hover:border-amber-400/50 ${hasRole(cat.role) ? '' : 'opacity-80 grayscale-[0.3]'}`}
+                                        className={`relative overflow-hidden rounded-2xl cursor-pointer group hover:scale-[1.02] transition-all duration-300 shadow-lg border border-white/5 hover:border-amber-400/50 ${canAccess(cat.role) ? '' : 'opacity-80 grayscale-[0.3]'}`}
                                     >
                                         {/* Background Gradient */}
                                         <div className={`absolute inset-0 bg-gradient-to-r ${cat.gradient} opacity-90 group-hover:opacity-100 transition-opacity`}></div>
@@ -197,7 +196,7 @@ const OtherRecipes = () => {
                                                 </div>
                                             </div>
                                             <div className="bg-black/20 p-2 rounded-full border border-white/10 group-hover:bg-white/20 transition-colors">
-                                                {hasRole(cat.role) ? (
+                                                {canAccess(cat.role) ? (
                                                     <CheckCircle size={18} className="text-white/80" />
                                                 ) : (
                                                     <Lock size={18} className="text-white/80" />

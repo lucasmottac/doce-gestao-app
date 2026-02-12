@@ -20,14 +20,23 @@ const ProtectedRoute = ({ children }) => {
     }
 
     // Check for main app access (Dashboard, Recipes, etc.)
-    const hasMainAccess = hasRole('acookies') || hasRole('avitalicio')
+    const hasAccess = hasRole('acookies') || hasRole('avitalicio');
 
-    // If user is logged in but doesn't have main access
-    // and is trying to access restricted pages (not other-recipes or profile)
-    // We use currentPath to check compatibility with HashRouter
-    if (!hasMainAccess &&
-        !currentPath.includes('/other-recipes') &&
-        !currentPath.includes('/profile')) {
+    console.log('ProtectedRoute Check:', {
+        path: currentPath,
+        hasAccess,
+        profile: user ? 'Loaded' : 'No User',
+        roles: hasRole('acookies') ? 'acookies' : 'none'
+    });
+
+    // Allowed routes for EVERYONE logged in (Profile, Other Recipes)
+    const alwaysAllowed = ['/profile', '/other-recipes'];
+    const isAllowedRoute = alwaysAllowed.some(route => currentPath.includes(route));
+
+    // If user has 'acookies', they can access EVERYTHING.
+    // If not, they can ONLY access 'alwaysAllowed' routes.
+    if (!hasAccess && !isAllowedRoute) {
+        console.warn(`Access Denied to ${currentPath}. Redirecting to /other-recipes`);
         return <Navigate to="/other-recipes" replace />
     }
 
